@@ -6,6 +6,8 @@
  */
 package analises;
 
+import java.util.Set;
+
 import javax.swing.JOptionPane;
 
 /**
@@ -15,146 +17,228 @@ import javax.swing.JOptionPane;
 public class AnaliseSintatica {
     private Token token;
     private AnaliseLexica mt;
-    
+    private TabelaIdentificadores ti;
+
     public AnaliseSintatica(String codigo) {
         this.token = new Token();
         this.mt = new AnaliseLexica(codigo);
+        this.ti = new TabelaIdentificadores();
         PROGRAM();
     }
-    
+
     public void PROGRAM() {
         token = mt.geraToken();
-        
+
         if (token.getStr().toString().equals("program")) {
             token = mt.geraToken();
-            
+
             if (token.getTipo() == TiposToken.ID) {
-                mt.getTabelaIdentificadores().adiciona(token.getStr().toString()); //Adiciona o token na tabela de símbolos
+                mt.getTabelaIdentificadores().adiciona(token.getStr().toString()); // Adiciona o token na tabela de
+                                                                                   // símbolos
                 token = mt.geraToken();
-                
+
                 if (token.getStr().toString().equals(";")) {
                     LIB();
                     CONST();
-                    TYPE();
                     VAR();
-                    
-                    if (token.getStr().toString().equals(";")) 
+
+                    if (token.getStr().toString().equals(";"))
                         token = mt.geraToken();
-                    
-                    
+
                     if (token.getStr().toString().equals("begin")) {
                         token = mt.geraToken();
-                        
+
                         LISTA_COM();
-                        
+
                         if (token.getStr().toString().equals("end")) {
                             token = mt.geraToken();
-                            
+
                             if (token.getStr().toString().equals(".")) {
                                 JOptionPane.showMessageDialog(null, "Arquivo compilado com sucesso!!!");
                                 return;
-                            }
-                            else ERRO(".", token.getStr().toString());
-                        }
-                        else ERRO("end", token.getStr().toString());
-                    }
-                    else ERRO("begin", token.getStr().toString());
-                }
-                else ERRO(";", token.getStr().toString());
-            }
-            else ERRO("identificador", token.getStr().toString());
-        }
-        else ERRO("program", token.getStr().toString());
+                            } else
+                                ERRO(".", token.getStr().toString());
+                        } else
+                            ERRO("end", token.getStr().toString());
+                    } else
+                        ERRO("begin", token.getStr().toString());
+                } else
+                    ERRO(";", token.getStr().toString());
+            } else
+                ERRO("identificador", token.getStr().toString());
+        } else
+            ERRO("program", token.getStr().toString());
     }
-    
+
     public void LIB() {
         token = mt.geraToken();
-        
-        if (token.getStr().toString().equals("uses")){
+
+        if (token.getStr().toString().equals("uses")) {
             token = mt.geraToken();
-            
+
             if (token.getTipo() == TiposToken.ID) {
                 LISTA_ID();
-                
+
                 if (token.getStr().toString().equals(";"))
                     return;
-                else ERRO(";", token.getStr().toString());
-            }
-            else ERRO("identificador", token.getStr().toString());
-        }
-        else return; //λ
-        
+                else
+                    ERRO(";", token.getStr().toString());
+            } else
+                ERRO("identificador", token.getStr().toString());
+        } else
+            return; // λ
+
     }
-    
+
     public void LISTA_ID() {
+
+        if (ti.estaContido(token.getStr().toString())) {
+            ERRO("novo identificador", token.getStr().toString());
+        }
+
+        ti.adiciona(token.getStr().toString());
         token = mt.geraToken();
-        if (token.getStr().toString().equals(",")){
+        if (token.getStr().toString().equals(",")) {
             token = mt.geraToken();
-            if (token.getTipo() == TiposToken.ID){
+            if (token.getTipo() == TiposToken.ID) {
                 LISTA_ID();
-            }
-            else ERRO("identificador", token.getStr().toString());
-        }
-        else return; //λ
+            } else
+                ERRO("identificador", token.getStr().toString());
+        } else
+            return; // λ
     }
-    
+
     public void CONST() {
-        if (token.getStr().toString().equals(";")){
+        if (token.getStr().toString().equals(";")) {
             token = mt.geraToken();
         }
-        
+
         if (token.getStr().toString().equals("const")) {
+            token = mt.geraToken();
             DEC_CONST();
-        }
-        else return; //λ
+        } else
+            return; // λ
     }
-    
+
     public void DEC_CONST() {
-        token = mt.geraToken();
-        
+
         if (token.getTipo() == TiposToken.ID) {
             token = mt.geraToken();
-            
+
             if (token.getStr().toString().equals("=")) {
                 token = mt.geraToken();
-                
+
                 if (token.getTipo() == TiposToken.CTE) {
                     token = mt.geraToken();
-                    
+
                     if (token.getStr().toString().equals(";")) {
                         token = mt.geraToken();
                         DEC_CONST2();
-                    }
-                    else ERRO(";", token.getStr().toString());
-                }
-                else ERRO("constante", token.getStr().toString());
-            }
-            else ERRO("=", token.getStr().toString());
-        }
-        else ERRO("identificador", token.getStr().toString());
+                    } else
+                        ERRO(";", token.getStr().toString());
+                } else
+                    ERRO("constante", token.getStr().toString());
+            } else
+                ERRO("=", token.getStr().toString());
+        } else
+            ERRO("identificador", token.getStr().toString());
     }
-    
+
     public void DEC_CONST2() {
         if (token.getTipo() == TiposToken.ID) {
             DEC_CONST();
         }
-        return; //λ
+        return; // λ
     }
-    
-    public void TYPE() {
-        return; //λ
-    }
-    
+
     public void VAR() {
-        return; //λ
+        if (token.getStr().toString().equals("var")) {
+            token = mt.geraToken();
+            DEC_VAR();
+        } else
+            return; // λ
     }
-    
+
+    public void DEC_VAR() {
+        if (token.getTipo() == TiposToken.ID) {
+            LISTA_ID(); // implementar lista ponteiro
+            
+            if (token.getStr().toString().equals(":")) {
+                token = mt.geraToken();
+                DEC_VAR2();
+            }
+            else ERRO(":", token.getStr().toString());
+
+        }
+        else ERRO("identificador", token.getStr().toString());
+    }
+
+    public void DEC_VAR2() {
+
+        if (TIPO(token.getStr().toString())) {
+            
+            if (!token.getStr().toString().equals("array")) {
+                token = mt.geraToken();
+
+                if (token.getStr().toString().equals(";")) {
+                    token = mt.geraToken();
+                    DEC_VAR3();
+                }
+                else ERRO(";", token.getStr().toString());
+                
+            } else {
+                token = mt.geraToken();
+
+                if (token.getStr().toString().equals("[")) {
+                    token = mt.geraToken();
+                    System.out.println(token.getStr().toString());
+
+                    if (token.getStr().toString().matches("\\d+")) {
+                        token = mt.geraToken();
+                        System.out.println(token.getStr().toString());
+                    }
+                    else ERRO("indíce", token.getStr().toString());
+                    
+                }
+                else ERRO("[", token.getStr().toString());
+            }
+
+        }
+        else ERRO("tipo", token.getStr().toString());
+
+    }
+
+    public void DEC_VAR3() {
+        if (token.getTipo() == TiposToken.ID) {
+            DEC_VAR();
+        }
+        else return; // λ
+    }
+
+    public boolean TIPO(String type) {
+        return type.equals("integer") || type.equals("real") || type.equals("char") || type.equals("string") || type.equals("boolean") || type.equals("array");
+    }
+
     public void LISTA_COM() {
+        
+          COMANDO();
+          LISTA_COM();
+          
+          return;
+
+    } 
+
+    public void COMANDO(){
+
+    }
+
+    public void ERRO(String esperado, String obtido) {
+        JOptionPane.showMessageDialog(null,
+                "Ocorreu um erro na análise! Era esperado " + esperado + " e foi obtido " + obtido);
         return;
     }
     
-    public void ERRO(String esperado, String obtido) {
-        JOptionPane.showMessageDialog(null, "Ocorreu um erro na análise! Era esperado " + esperado + " e foi obtido " + obtido);
-        return;
-    }
+
+
+
 }
