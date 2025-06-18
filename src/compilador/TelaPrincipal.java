@@ -149,7 +149,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCompilarActionPerformed
-        AnaliseSintatica as = new AnaliseSintatica(jtaCodigo.getText());
+        AnaliseSintatica as = new AnaliseSintatica(jtaCodigo.getText().toLowerCase());
     }//GEN-LAST:event_jbCompilarActionPerformed
 
     private void jmiAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAbrirActionPerformed
