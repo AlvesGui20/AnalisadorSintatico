@@ -30,7 +30,7 @@ public class TabelaReservadas {
         tabela.put(12, "array");
         tabela.put(13, "of");
         tabela.put(14, "write");
-        tabela.put(15, "writln");
+        tabela.put(15, "writeln");
         tabela.put(16, "read");
         tabela.put(17, "readln");
         
