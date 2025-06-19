@@ -1,35 +1,66 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package analises;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- *
- * @author valter
- */
 public class TabelaIdentificadores {
-    private Map<Integer, String> tabela;
+    private Map<Integer, Map<String, Object>> tabela;
     private int key;
 
+    // Lista separada para armazenar apenas variáveis declaradas na seção var
+    private List<String> listaVariaveis;
+
     public TabelaIdentificadores() {
-        this.tabela = new HashMap<Integer, String>();
+        this.tabela = new HashMap<>();
         this.key = 1;
+        this.listaVariaveis = new ArrayList<>();
     }
 
-    public void adiciona(String valor) {
-        if (!tabela.containsValue(valor)) {
-            tabela.put(key, valor);
+    public void adiciona(String nome, String tipo, String valor) {
+        if (!estaContido(nome)) {
+            Map<String, Object> dados = new HashMap<>();
+            dados.put("nome", nome);
+            dados.put("tipo", tipo);
+            dados.put("valor", valor);
+
+            tabela.put(key, dados);
             key++;
+
+            // Se for variável (tipo não for programa ou biblioteca), adiciona na lista de variáveis
+            if (!tipo.equals("programa") && !tipo.equals("biblioteca")) {
+                listaVariaveis.add(nome);
+            }
         }
     }
 
-    public Boolean estaContido(String valor) {
-        return tabela.containsValue(valor);
+    public boolean estaContido(String nome) {
+        for (Map<String, Object> dados : tabela.values()) {
+            if (dados.get("nome").equals(nome)) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    public void imprimeTabela() {
+        for (Map.Entry<Integer, Map<String, Object>> entry : tabela.entrySet()) {
+            System.out.println("ID: " + entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+
+    public String getTipo(String nome) {
+        for (Map<String, Object> dados : tabela.values()) {
+            if (dados.get("nome").equals(nome)) {
+                return dados.get("tipo").toString();
+            }
+        }
+        return null;
+    }
+
+    // Método para obter a lista de variáveis declaradas
+    public List<String> getListaVariaveis() {
+        return listaVariaveis;
+    }
 }

@@ -113,6 +113,21 @@ public class AnaliseLexica {
             token.setTipo(TiposToken.PONTUACAO);
             
             return token;
+        }else if (c == '(') { //verifica :
+            token.add(c);
+            c = cabecote();
+            i++;
+            token.setTipo(TiposToken.PONTUACAO);
+            
+            return token;
+        }
+        else if (c == ')') { //verifica :
+            token.add(c);
+            c = cabecote();
+            i++;
+            token.setTipo(TiposToken.PONTUACAO);
+            
+            return token;
         }
         else if (c == ';') { //verifica ;
             token.add(c);
