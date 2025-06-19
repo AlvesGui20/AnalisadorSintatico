@@ -16,7 +16,7 @@ public class AnaliseLexica {
     private TabelaIdentificadores identificadores;
     private int i;
     private char c;
-    
+
     public AnaliseLexica(String s) {
         this.s = s;
         this.i = 0;
@@ -25,71 +25,80 @@ public class AnaliseLexica {
         identificadores = new TabelaIdentificadores();
         i++;
     }
-    
+
     public Token geraToken() {
         token = new Token();
-        
+
         while ((c == ' ') || (c == '\n') || (c == '\t')) {
             c = cabecote();
             i++;
         }
-        
-        if (Character.isLetter(c)) { //Verifica tokens que inicial com letra
+
+        if (Character.isLetter(c)) { // Verifica tokens que inicial com letra
             while (Character.isLetterOrDigit(c) || (c == '_')) {
                 token.add(c);
                 c = cabecote();
                 i++;
             }
-            
-            if (reservadas.estaContido(token.getStr().toString())) //identifica se o token é palavra reservada
+
+            if (reservadas.estaContido(token.getStr().toString())) // identifica se o token é palavra reservada
                 token.setTipo(TiposToken.PALAVRA_RESERVADA);
-            else if (token.getStr().toString().equals("true") || token.getStr().toString().equals("false")) //identifica se o token é constante boolean
+            else if (token.getStr().toString().equals("true") || token.getStr().toString().equals("false")) // identifica
+                                                                                                            // se o
+                                                                                                            // token é
+                                                                                                            // constante
+                                                                                                            // boolean
                 token.setTipo(TiposToken.CTE);
-            else token.setTipo(TiposToken.ID); //Caso contrário o token é um identificador
-            
+            else
+                token.setTipo(TiposToken.ID); // Caso contrário o token é um identificador
+
             return token;
-        }
-        else if ((Character.isDigit(c)) || (c == '-')) { //Constantes numéticas
-            if (c == '-') { //verifica se é negativa
+        } else if ((Character.isDigit(c)) || (c == '-')) { // Constantes numéticas
+            if (c == '-') { // verifica se é negativa
                 token.add(c);
                 c = cabecote();
                 i++;
             }
-            
+
             while (Character.isDigit(c)) {
                 token.add(c);
                 c = cabecote();
                 i++;
             }
-            
-            if (c == '.') { //verifica se é real
-                token.add(c);
+
+            if (c == '.') {  // verifica se é real
+                Character aux = c;
                 c = cabecote();
-                i++;
-                
-                if (Character.isDigit(c)) { //verifica se há dígito depois do .
-                    token.add(c);
-                    c = cabecote();
+
+                if (c != '.') { // verifica se não é um intervalo
+                    token.add(aux);
                     i++;
-                    
-                    while (Character.isDigit(c)) {
+
+                    if (Character.isDigit(c)) { // verifica se há dígito depois do .
                         token.add(c);
                         c = cabecote();
                         i++;
+
+                        while (Character.isDigit(c)) {
+                            token.add(c);
+                            c = cabecote();
+                            i++;
+                        }
+
+                    } else {
+                        token.setTipo(TiposToken.ERRO); // retorna erro se não conter dígito depois do .
+                        return token;
                     }
-                    
-                }
-                else {
-                    token.setTipo(TiposToken.ERRO); //retorna erro se não conter dígito depois do .
-                    return token;
+                } else {
+                    i = i - 1;
+                    c = cabecote();
                 }
             }
-            
+
             token.setTipo(TiposToken.CTE);
-            
+
             return token;
-        }
-        else if (c == '\'') { //Verifica constantes string ou char
+        } else if (c == '\'') { // Verifica constantes string ou char
             token.add(c);
             c = cabecote();
             i++;
@@ -98,15 +107,14 @@ public class AnaliseLexica {
                 c = cabecote();
                 i++;
             }
-            
+
             token.add(c);
             c = cabecote();
             i++;
             token.setTipo(TiposToken.CTE);
-            
+
             return token;
-        }
-        else if (c == ':') { //verifica :
+        } else if (c == ':') { // verifica :
             token.add(c);
             c = cabecote();
             i++;
@@ -126,10 +134,9 @@ public class AnaliseLexica {
             c = cabecote();
             i++;
             token.setTipo(TiposToken.PONTUACAO);
-            
+
             return token;
-        }
-        else if (c == ';') { //verifica ;
+        } else if (c == ';') { // verifica ;
             token.add(c);
             c = cabecote();
             i++;
@@ -137,7 +144,7 @@ public class AnaliseLexica {
             
             return token;
         }
-        else if (c == '.') { //verifica .
+        else if (c == ')') { //verifica :
             token.add(c);
             c = cabecote();
             i++;
@@ -145,38 +152,81 @@ public class AnaliseLexica {
             
             return token;
         }
-        else if (c == ',') { //verifica ,
+
+            
+      else if (c == ';') { // verifica ;
+
             token.add(c);
             c = cabecote();
             i++;
             token.setTipo(TiposToken.PONTUACAO);
-            
+
             return token;
-        }
-         else if (c == '=') { //verifica ,
+        } else if (c == '.') { // verifica .
+            token.add(c);
+            c = cabecote();
+            i++;
+
+            if (c == '.') { // verifica se é intervalo
+                token.add(c);
+                i++;
+                c = cabecote();
+            }
+
+            token.setTipo(TiposToken.PONTUACAO);
+
+            return token;
+        } else if (c == ',') { // verifica ,
             token.add(c);
             c = cabecote();
             i++;
             token.setTipo(TiposToken.PONTUACAO);
-            
+
             return token;
-        }// Todo: adicionar outros símbolos
-        else {
+        } else if (c == '=') { // verifica ,
+            token.add(c);
+            c = cabecote();
+            i++;
+            token.setTipo(TiposToken.PONTUACAO);
+
+            return token;
+        } else if (c == '[') { // verifica [
+            token.add(c);
+            c = cabecote();
+            i++;
+            token.setTipo(TiposToken.PONTUACAO);
+
+            return token;
+        } else if (c == ']') { // verifica ]
+            token.add(c);
+            c = cabecote();
+            i++;
+            token.setTipo(TiposToken.PONTUACAO);
+
+            return token;
+        } else if (c == '^') { // verifica ^
+            token.add(c);
+            c = cabecote();
+            i++;
+            token.setTipo(TiposToken.PONTUACAO);
+
+            return token; // Todo: adicionar outros símbolos
+        } else {
             token.add(c);
             System.out.println("C: " + c);
             token.setTipo(TiposToken.ERRO);
-            
+
             return token;
         }
     }
-    
+
     public char cabecote() {
         if ((i < s.length()) && (s.length() > 0)) {
             return s.charAt(i);
-        }
-        else return '?';
+        } else
+            return '?';
     }
-    
+
     public TabelaIdentificadores getTabelaIdentificadores() {
         return this.identificadores;
     }

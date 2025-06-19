@@ -19,7 +19,8 @@ public class AnaliseSintatica {
         PROGRAM();
         AnaliseSintatica.houveErroCompilacao = false;
     }
-     public static boolean houveErroCompilacao = false; 
+     
+    public static boolean houveErroCompilacao = false;
 
     public void PROGRAM() {
         token = mt.geraToken();
@@ -292,9 +293,14 @@ public class AnaliseSintatica {
                 token = mt.geraToken();
             }
         } 
-
     }
 }
+
+  
+
+    
+
+ 
 
     private void ENTRADA() {
          if (token.getStr().toString().equals("read")) {

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TabelaIdentificadores {
     private Map<Integer, Map<String, Object>> tabela;
@@ -59,8 +61,6 @@ public class TabelaIdentificadores {
         return null;
     }
 
-    // Método para obter a lista de variáveis declaradas
-    public List<String> getListaVariaveis() {
-        return listaVariaveis;
-    }
+   
+    
 }
