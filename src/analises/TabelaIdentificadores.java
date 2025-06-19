@@ -27,8 +27,9 @@ public class TabelaIdentificadores {
             tabela.put(key, dados);
             key++;
 
-            // Se for variável (tipo não for programa ou biblioteca), adiciona na lista de variáveis
-            if (!tipo.equals("programa") && !tipo.equals("biblioteca")) {
+            // Se for variável (tipo não for programa ou biblioteca), adiciona na lista de
+            // variáveis
+            if (!tipo.equals("programa") && !tipo.equals("biblioteca") && !tipo.equals("constante")) {
                 listaVariaveis.add(nome);
             }
         }
@@ -56,6 +57,15 @@ public class TabelaIdentificadores {
             }
         }
         return null;
+    }
+
+    public boolean isConstante(String nome) {
+        for (Map<String, Object> dados : tabela.values()) {
+            if (dados.get("nome").equals(nome) && "constante".equals(dados.get("tipo"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Método para obter a lista de variáveis declaradas

@@ -60,38 +60,42 @@ public class AnaliseLexica {
                 i++;
             }
 
+            if (!Character.isDigit(c)) {
+                token.setTipo(TiposToken.ERRO);
+                return token;
+            }
+
             while (Character.isDigit(c)) {
                 token.add(c);
                 c = cabecote();
                 i++;
             }
 
-            if (c == '.') {  // verifica se é real
-                Character aux = c;
-                c = cabecote();
+            if (s.charAt(i - 1) == '.' && s.charAt(i) == '.') {
+                token.setTipo(TiposToken.CTE);
 
-                if (c != '.') { // verifica se não é um intervalo
-                    token.add(aux);
+                return token;
+            }
+
+            if (c == '.') { // verifica se não é um intervalo
+                token.add(c);
+                c = cabecote();
+                i++;
+
+                if (Character.isDigit(c)) { // verifica se há dígito depois do .
+                    token.add(c);
+                    c = cabecote();
                     i++;
 
-                    if (Character.isDigit(c)) { // verifica se há dígito depois do .
+                    while (Character.isDigit(c)) {
                         token.add(c);
                         c = cabecote();
                         i++;
-
-                        while (Character.isDigit(c)) {
-                            token.add(c);
-                            c = cabecote();
-                            i++;
-                        }
-
-                    } else {
-                        token.setTipo(TiposToken.ERRO); // retorna erro se não conter dígito depois do .
-                        return token;
                     }
+
                 } else {
-                    i = i - 1;
-                    c = cabecote();
+                    token.setTipo(TiposToken.ERRO); // retorna erro se não conter dígito depois do .
+                    return token;
                 }
             }
 
@@ -135,8 +139,8 @@ public class AnaliseLexica {
 
             if (c == '.') { // verifica se é intervalo
                 token.add(c);
-                i++;
                 c = cabecote();
+                i++;
             }
 
             token.setTipo(TiposToken.PONTUACAO);

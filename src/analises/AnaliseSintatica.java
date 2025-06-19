@@ -128,6 +128,17 @@ public class AnaliseSintatica {
 
     public void DEC_CONST() {
         if (token.getTipo() == TiposToken.ID) {
+
+            if (ti.estaContido(token.getStr().toString())) {
+                ERRO("novo identificador (já declarado)", token.getStr().toString());
+                return;
+            }
+            if (tr.estaContido(token.getStr().toString())) {
+                ERRO("novo identificador (palavra reservada)", token.getStr().toString());
+                return;
+            }
+
+            ti.adiciona(token.getStr().toString(), "constante");
             token = mt.geraToken();
 
             if (token.getStr().toString().equals("=")) {
@@ -206,7 +217,8 @@ public class AnaliseSintatica {
 
                 DEC_VAR4();
 
-            } else ERRO(";", token.getStr().toString());
+            } else
+                ERRO(";", token.getStr().toString());
 
         } else {
             token = mt.geraToken();
@@ -237,24 +249,25 @@ public class AnaliseSintatica {
 
         if (token.getTipo() == TiposToken.ID) {
             DEC_VAR();
-        } else return;
+        } else
+            return;
 
     }
 
     public void INTERVALO() {
 
-        if (token.getTipo() == TiposToken.CTE) {
+        if ((token.getTipo() == TiposToken.CTE) || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
             token = mt.geraToken();
 
             if (token.getStr().toString().equals("..")) {
                 token = mt.geraToken();
 
-                if (token.getTipo() == TiposToken.CTE) {
+                if ((token.getTipo() == TiposToken.CTE) || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
                     INTERVALO2();
                 } else
                     ERRO("constante", token.getStr().toString());
             } else
-                ERRO("intervalo", token.getStr().toString());
+                ERRO("..", token.getStr().toString());
         } else
             ERRO("constante", token.getStr().toString());
 
@@ -266,13 +279,13 @@ public class AnaliseSintatica {
         if (token.getStr().toString().equals(",")) {
             token = mt.geraToken();
 
-            if (token.getTipo() == TiposToken.CTE) {
+            if ((token.getTipo() == TiposToken.CTE) || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
                 token = mt.geraToken();
 
                 if (token.getStr().toString().equals("..")) {
                     token = mt.geraToken();
 
-                    if (token.getTipo() == TiposToken.CTE) {
+                    if ((token.getTipo() == TiposToken.CTE) || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
                         INTERVALO2();
                     } else
                         ERRO("constante", token.getStr().toString());
@@ -297,7 +310,8 @@ public class AnaliseSintatica {
             return;
         } else if (token.getStr().toString().equals("char")) {
             return;
-        } else ERRO("tipo", token.getStr().toString());
+        } else
+            ERRO("tipo", token.getStr().toString());
 
     }
 
