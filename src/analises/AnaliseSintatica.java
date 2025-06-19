@@ -19,7 +19,7 @@ public class AnaliseSintatica {
         PROGRAM();
         AnaliseSintatica.houveErroCompilacao = false;
     }
-     
+
     public static boolean houveErroCompilacao = false;
 
     public void PROGRAM() {
@@ -49,10 +49,11 @@ public class AnaliseSintatica {
                             token = mt.geraToken();
 
                             if (token.getStr().toString().equals(".")) {
-                                
-                                if(!AnaliseSintatica.houveErroCompilacao) {
-                                JOptionPane.showMessageDialog(null, "Arquivo compilado com sucesso!!!");
-                               } return;
+
+                                if (!AnaliseSintatica.houveErroCompilacao) {
+                                    JOptionPane.showMessageDialog(null, "Arquivo compilado com sucesso!!!");
+                                }
+                                return;
                             } else
                                 ERRO(".", token.getStr().toString());
                         } else
@@ -174,25 +175,14 @@ public class AnaliseSintatica {
     }
 
     public void DEC_VAR() {
+
         if (token.getTipo() == TiposToken.ID) {
-            List<String> idsVariaveis = new ArrayList<>();
-
-            idsVariaveis.add(token.getStr().toString());
-            token = mt.geraToken();
-
-            while (token.getStr().toString().equals(",")) {
-                token = mt.geraToken();
-                if (token.getTipo() == TiposToken.ID) {
-                    idsVariaveis.add(token.getStr().toString());
-                    token = mt.geraToken();
-                } else {
-                    ERRO("identificador", token.getStr().toString());
-                    return;
-                }
-            }
+            LISTA_ID("var");
 
             if (token.getStr().toString().equals(":")) {
+
                 token = mt.geraToken();
+
                 DEC_VAR2();
 
             } else
@@ -213,6 +203,49 @@ public class AnaliseSintatica {
     }
 
     public void DEC_VAR3() {
+
+        if (!token.getStr().toString().equals("array")) {
+
+            TIPO();
+
+            token = mt.geraToken();
+
+            if (token.getStr().toString().equals(";")) {
+
+                token = mt.geraToken();
+
+                DEC_VAR4();
+
+            } else
+                ERRO(";", token.getStr().toString());
+
+        } else {
+            token = mt.geraToken();
+
+            if (token.getStr().toString().equals("[")) {
+                token = mt.geraToken();
+
+                INTERVALO();
+
+                if (token.getStr().toString().endsWith("]")) {
+                    token = mt.geraToken();
+
+                    if (token.getStr().toString().equals(";")) {
+                        token = mt.geraToken();
+                        DEC_VAR4();
+                    } else
+                        ERRO(";", token.getStr().toString());
+                } else
+                    ERRO("]", token.getStr().toString());
+
+            } else
+                ERRO("[", token.getStr().toString());
+        }
+
+    }
+
+    public void DEC_VAR4() {
+
         if (token.getTipo() == TiposToken.ID) {
             DEC_VAR();
         } else
@@ -222,13 +255,15 @@ public class AnaliseSintatica {
 
     public void INTERVALO() {
 
-        if ((token.getTipo() == TiposToken.CTE) || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
+        if ((token.getTipo() == TiposToken.CTE)
+                || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
             token = mt.geraToken();
 
             if (token.getStr().toString().equals("..")) {
                 token = mt.geraToken();
 
-                if ((token.getTipo() == TiposToken.CTE) || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
+                if ((token.getTipo() == TiposToken.CTE)
+                        || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
                     INTERVALO2();
                 } else
                     ERRO("constante", token.getStr().toString());
@@ -245,13 +280,15 @@ public class AnaliseSintatica {
         if (token.getStr().toString().equals(",")) {
             token = mt.geraToken();
 
-            if ((token.getTipo() == TiposToken.CTE) || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
+            if ((token.getTipo() == TiposToken.CTE)
+                    || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
                 token = mt.geraToken();
 
                 if (token.getStr().toString().equals("..")) {
                     token = mt.geraToken();
 
-                    if ((token.getTipo() == TiposToken.CTE) || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
+                    if ((token.getTipo() == TiposToken.CTE)
+                            || (token.getTipo() == TiposToken.ID && ti.isConstante(token.getStr().toString()))) {
                         INTERVALO2();
                     } else
                         ERRO("constante", token.getStr().toString());
@@ -281,7 +318,8 @@ public class AnaliseSintatica {
 
     public void LISTA_COM() {
         while (token.getTipo() == TiposToken.ID || token.getStr().toString().equals("readln")
-                || token.getStr().toString().equals("writeln")|| token.getStr().toString().equals("read")|| token.getStr().toString().equals("write")) {
+                || token.getStr().toString().equals("writeln") || token.getStr().toString().equals("read")
+                || token.getStr().toString().equals("write")) {
             COMANDO();
         }
     }
@@ -289,9 +327,9 @@ public class AnaliseSintatica {
     public void COMANDO() {
         if (token.getTipo() == TiposToken.ID) {
             ATRIB();
-        } else if (token.getStr().toString().equals("readln")||token.getStr().toString().equals("read")){
+        } else if (token.getStr().toString().equals("readln") || token.getStr().toString().equals("read")) {
             ENTRADA();
-        } else if (token.getStr().toString().equals("writeln")||token.getStr().toString().equals("write")) {
+        } else if (token.getStr().toString().equals("writeln") || token.getStr().toString().equals("write")) {
             SAIDA();
         } else {
             ERRO("comando válido (ID, readln ou writeln)", token.getStr().toString());
@@ -307,152 +345,143 @@ public class AnaliseSintatica {
         }
     }
 
-   private void SAIDA() {
-    if (token.getStr().toString().equals("write")) {
-        token = mt.geraToken(); 
-
-        if (token.getStr().toString().equals("(")) {
-            token = mt.geraToken(); 
-            TERMO(); 
-            LISTA_TERMO();
-           
-      
-            if (token.getStr().toString().equals(")")) {
-                token = mt.geraToken();
-            } else {
-                ERRO(")", token.getStr().toString());
-                token = mt.geraToken();
-            }
-        } else {
-            ERRO("(", token.getStr().toString());
+    private void SAIDA() {
+        if (token.getStr().toString().equals("write")) {
             token = mt.geraToken();
-        }
-    } else if(token.getStr().toString().equals("writeln")) {
-        token = mt.geraToken(); 
 
-        if (token.getStr().toString().equals("(")) {
-            token = mt.geraToken(); 
-            TERMO(); 
-            LISTA_TERMO();
-           
-      
-            if (token.getStr().toString().equals(")")) {
+            if (token.getStr().toString().equals("(")) {
                 token = mt.geraToken();
+                TERMO();
+                LISTA_TERMO();
+
+                if (token.getStr().toString().equals(")")) {
+                    token = mt.geraToken();
+                } else {
+                    ERRO(")", token.getStr().toString());
+                    token = mt.geraToken();
+                }
             } else {
-                ERRO(")", token.getStr().toString());
+                ERRO("(", token.getStr().toString());
                 token = mt.geraToken();
             }
-        } 
+        } else if (token.getStr().toString().equals("writeln")) {
+            token = mt.geraToken();
+
+            if (token.getStr().toString().equals("(")) {
+                token = mt.geraToken();
+                TERMO();
+                LISTA_TERMO();
+
+                if (token.getStr().toString().equals(")")) {
+                    token = mt.geraToken();
+                } else {
+                    ERRO(")", token.getStr().toString());
+                    token = mt.geraToken();
+                }
+            }
+        }
     }
-}
-
-  
-
-    
-
- 
 
     private void ENTRADA() {
-         if (token.getStr().toString().equals("read")) {
-        token = mt.geraToken(); 
-
-        if (token.getStr().toString().equals("(")) {
-            token = mt.geraToken(); 
-            LISTA_ID("var");
-           
-      
-            if (token.getStr().toString().equals(")")) {
-                token = mt.geraToken();
-            } else {
-                ERRO(")", token.getStr().toString());
-                token = mt.geraToken();
-            }
-        } else {
-            ERRO("(", token.getStr().toString());
+        if (token.getStr().toString().equals("read")) {
             token = mt.geraToken();
-        }
-    } else if(token.getStr().toString().equals("readln")) {
-        token = mt.geraToken(); 
 
-        if (token.getStr().toString().equals("(")) {
-            token = mt.geraToken(); 
-            TERMO(); 
-            LISTA_TERMO();
-           
-      
-            if (token.getStr().toString().equals(")")) {
+            if (token.getStr().toString().equals("(")) {
                 token = mt.geraToken();
+                LISTA_ID("var");
+
+                if (token.getStr().toString().equals(")")) {
+                    token = mt.geraToken();
+                } else {
+                    ERRO(")", token.getStr().toString());
+                    token = mt.geraToken();
+                }
             } else {
-                ERRO(")", token.getStr().toString());
+                ERRO("(", token.getStr().toString());
                 token = mt.geraToken();
             }
-        } 
+        } else if (token.getStr().toString().equals("readln")) {
+            token = mt.geraToken();
 
-    }
+            if (token.getStr().toString().equals("(")) {
+                token = mt.geraToken();
+                TERMO();
+                LISTA_TERMO();
+
+                if (token.getStr().toString().equals(")")) {
+                    token = mt.geraToken();
+                } else {
+                    ERRO(")", token.getStr().toString());
+                    token = mt.geraToken();
+                }
+            }
+
+        }
     }
 
     private void ATRIB() {
-    String id = token.getStr().toString();
-    boolean erroNoIdEsquerdo = false; 
+        String id = token.getStr().toString();
+        boolean erroNoIdEsquerdo = false;
 
-    if (!ti.estaContido(id)) {
-        ERRO("variável declarada", id);
-        erroNoIdEsquerdo = true;
-    } else { 
-        String tipoId = ti.getTipo(id);
-        if (tipoId.equals("programa") || tipoId.equals("biblioteca")) {
-            ERRO("identificador válido (não pode ser biblioteca nem programa)", id);
+        if (!ti.estaContido(id)) {
+            ERRO("variável declarada", id);
             erroNoIdEsquerdo = true;
+        } else {
+            String tipoId = ti.getTipo(id);
+            if (tipoId.equals("programa") || tipoId.equals("biblioteca")) {
+                ERRO("identificador válido (não pode ser biblioteca nem programa)", id);
+                erroNoIdEsquerdo = true;
+            }
+        }
+        token = mt.geraToken();
+        if (!token.getStr().toString().equals(":")) {
+            ERRO(":", token.getStr().toString());
+        }
+        token = mt.geraToken();
+        if (!token.getStr().toString().equals("=")) {
+            ERRO("=", token.getStr().toString());
+        }
+        token = mt.geraToken();
+        TERMO();
+
+    }
+
+    public void TERMO() {
+        if (token.getTipo() == TiposToken.ID) {
+            String idDireita = token.getStr().toString();
+
+            if (!ti.estaContido(idDireita)) {
+                ERRO("variável declarada", idDireita);
+            } else {
+                String tipoDireita = ti.getTipo(idDireita);
+                if (tipoDireita.equals("programa") || tipoDireita.equals("biblioteca")) {
+                    ERRO("Um identificador valido", idDireita);
+                }
+            }
+            token = mt.geraToken();
+
+        } else if (token.getTipo() == TiposToken.CTE) {
+            token = mt.geraToken();
+        } else {
+            ERRO("identificador ou constante", token.getStr().toString());
+            token = mt.geraToken();
+        }
+
+    }
+
+    public void LISTA_TERMO() {
+        if (token.getStr().toString().equals(",")) {
+            token = mt.geraToken();
+            TERMO();
+            LISTA_TERMO();
+        } else {
+            return;
         }
     }
-    token = mt.geraToken();
-    if (!token.getStr().toString().equals(":")) {
-        ERRO(":", token.getStr().toString());      
-    }
-    token = mt.geraToken();
-    if (!token.getStr().toString().equals("=")) {
-        ERRO("=", token.getStr().toString());
-    }
-    token = mt.geraToken();
-    TERMO();
-
-}
-    
-public void TERMO() {
-    if (token.getTipo() == TiposToken.ID) {
-        String idDireita = token.getStr().toString();
-
-        if (!ti.estaContido(idDireita)) {
-            ERRO("variável declarada", idDireita);
-        } else {
-            String tipoDireita = ti.getTipo(idDireita);
-            if (tipoDireita.equals("programa") || tipoDireita.equals("biblioteca")) {
-                ERRO("Um identificador valido", idDireita);
-            }
-        } token = mt.geraToken();
-    
-    } else if (token.getTipo() == TiposToken.CTE) { 
-        token = mt.geraToken();
-    } else {
-        ERRO("identificador ou constante", token.getStr().toString());
-        token = mt.geraToken();
-    }
-
-}
-public void LISTA_TERMO() {
-    if (token.getStr().toString().equals(",")) {
-        token = mt.geraToken();  
-        TERMO();              
-        LISTA_TERMO();          
-    } else {
-        return;
-    }
-}
-
 
     public void ERRO(String esperado, String obtido) {
         JOptionPane.showMessageDialog(null,
                 "Ocorreu um erro na análise! Era esperado " + esperado + " e foi obtido " + obtido);
-                AnaliseSintatica.houveErroCompilacao = true; 
+        AnaliseSintatica.houveErroCompilacao = true;
     }
 }
