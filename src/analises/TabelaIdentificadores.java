@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TabelaIdentificadores {
     private Map<Integer, Map<String, Object>> tabela;
