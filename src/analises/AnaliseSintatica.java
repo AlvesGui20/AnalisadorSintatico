@@ -434,16 +434,16 @@ public class AnaliseSintatica {
 
     private void ATRIB() {
         String id = token.getStr().toString();
-        boolean erroNoIdEsquerdo = false;
 
-        if (!ti.estaContido(id)) {
+
+        if (!ti.estaContido(id)||ti.isConstante(id)) {
             ERRO("variável declarada", id);
-            erroNoIdEsquerdo = true;
+          
         } else {
             String tipoId = ti.getTipo(id);
             if (tipoId.equals("programa") || tipoId.equals("biblioteca")) {
                 ERRO("identificador válido (não pode ser biblioteca nem programa)", id);
-                erroNoIdEsquerdo = true;
+       
             }
         }
         token = mt.geraToken();
