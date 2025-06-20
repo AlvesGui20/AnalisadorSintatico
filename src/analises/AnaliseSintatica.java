@@ -87,7 +87,17 @@ public class AnaliseSintatica {
     public void LISTA_ID(String type) {
         String nome = token.getStr().toString();
 
-        if (ti.estaContido(nome)) {
+        if(type.equals("read")){
+
+            if(!ti.estaContido(nome)){
+
+                ERRO("identificador declarado", nome);
+                return;
+            }
+
+        }
+
+        if (ti.estaContido(nome)&&!type.equals("read")) {
             ERRO("novo identificador ", nome);
             return;
         }
@@ -96,7 +106,13 @@ public class AnaliseSintatica {
             return;
         }
 
-        ti.adiciona(nome, type);
+        if(!type.equals("read")){
+           
+            ti.adiciona(nome, type);
+            
+        }
+
+       
         token = mt.geraToken();
 
         if (token.getStr().toString().equals(",")) {
@@ -385,7 +401,7 @@ public class AnaliseSintatica {
 
             if (token.getStr().toString().equals("(")) {
                 token = mt.geraToken();
-                LISTA_ID("var");
+                LISTA_ID("read");
 
                 if (token.getStr().toString().equals(")")) {
                     token = mt.geraToken();
